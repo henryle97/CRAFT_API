@@ -4,3 +4,4 @@
 *.pth
 result*
 weights*
+test_imgs*

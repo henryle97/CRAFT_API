@@ -4,40 +4,22 @@ MIT License
 """
 
 # -*- coding: utf-8 -*-
-import sys
 import os
 import time
 import argparse
 
 import torch
-import torch.nn as nn
 import torch.backends.cudnn as cudnn
 from torch.autograd import Variable
 
-from PIL import Image
-
 import cv2
-from skimage import io
 import numpy as np
-import craft_utils
-import imgproc
-import file_utils
-import json
-import zipfile
+from model import craft_utils
+from utils import imgproc, file_utils
 
-from craft import CRAFT
+from model.craft import CRAFT
 
-from collections import OrderedDict
-def copyStateDict(state_dict):
-    if list(state_dict.keys())[0].startswith("module"):
-        start_idx = 1
-    else:
-        start_idx = 0
-    new_state_dict = OrderedDict()
-    for k, v in state_dict.items():
-        name = ".".join(k.split(".")[start_idx:])
-        new_state_dict[name] = v
-    return new_state_dict
+
 
 def str2bool(v):
     return v.lower() in ("yes", "y", "true", "t", "1")
@@ -71,6 +53,7 @@ def test_net(net, image, text_threshold, link_threshold, low_text, cuda, poly, r
 
     # resize
     img_resized, target_ratio, size_heatmap = imgproc.resize_aspect_ratio(image, args.canvas_size, interpolation=cv2.INTER_LINEAR, mag_ratio=args.mag_ratio)
+    print(img_resized.shape)
     ratio_h = ratio_w = 1 / target_ratio
 
     # preprocessing
@@ -139,7 +122,7 @@ if __name__ == '__main__':
     # LinkRefiner
     refine_net = None
     if args.refine:
-        from refinenet import RefineNet
+        from model.refinenet import RefineNet
         refine_net = RefineNet()
         print('Loading weights of refiner from checkpoint (' + args.refiner_model + ')')
         if args.cuda:
@@ -166,6 +149,6 @@ if __name__ == '__main__':
         mask_file = result_folder + "/res_" + filename + '_mask.jpg'
         cv2.imwrite(mask_file, score_text)
 
-        file_utils.saveResult(image_path, image[:,:,::-1], polys, dirname=result_folder)
+        file_utils.saveResult(image_path, image[:, :, ::-1], polys, dirname=result_folder)
 
     print("elapsed time : {}s".format(time.time() - t))
