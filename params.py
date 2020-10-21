@@ -3,9 +3,11 @@ cuda = False
 trained_model = "weights/craft_mlt_25k.pth"
 result_folder = "./result/"
 canvas_size = 768             # image size for inference : smaller image --> lower accuracy, default 768
-text_threshold = 0.5          # text confidence threshold
-low_text = 0.32                # text low-bound score: 0.4 is best for word: space xung quanh 1 word, cang cao thi space cang it
+text_threshold = 0.4          # text confidence threshold
+low_text = 0.38               # text low-bound score: 0.32 is best for word: space xung quanh 1 word, cang cao thi space cang it
 link_threshold = 0.4          # link confidence threshold: threshold 2 ky tu lien ket voi nhau thanh 1 tu, upping de tach duoc nhieu tu
+
+# best: 0.5, 0.32, 0.4
 
 # not important
 mag_ratio = 1.5               # image magnification ratio
@@ -16,8 +18,8 @@ refiner_model = "weights/craft_refiner_CTW1500.pth"
 
 # other utils
 horizontal_mode = True              # only horizontal boxes
-ratio_box_horizontal = 0.5          # if number of horizontal boxes is larger than 50%, use horizontal mode
-expand_ratio = 0.02                 # expand top, bottom: 3%
+ratio_box_horizontal = 0.3          # if number of horizontal boxes is larger than 50%, use horizontal mode
+expand_ratio = 0.05                 # expand top, bottom: 3%
 visualize = True
 show_time = True
 folder_test = False
@@ -25,9 +27,6 @@ folder_test = False
 # api
 host = 'localhost'
 port = 1915
-
-
-
 
 
 #text_threshold = Certainity required for a something to be classified as a letter. The higher this value the clearer characters need to look. I'd recommend 0.5-0.6

@@ -2,7 +2,7 @@
 import os
 import numpy as np
 import cv2
-
+import numpy as np
 
 # borrowed from https://github.com/lengstrom/fast-style-transfer/blob/master/src/utils.py
 def get_files(img_dir):
@@ -41,6 +41,12 @@ def saveResult(img_file, img, boxes, dirname='./result/', verticals=None, texts=
             None
         """
         img = np.array(img)
+        horizontal = False
+
+        print(type(boxes[0][0]))
+        if isinstance(boxes[0][0], np.float32):  # boxes[0][0] = x_min or = [l,t]
+            horizontal = True
+            print("Display horizontal")
 
         # make result file list
         filename, file_ext = os.path.splitext(os.path.basename(img_file))
@@ -58,18 +64,23 @@ def saveResult(img_file, img, boxes, dirname='./result/', verticals=None, texts=
                 strResult = ','.join([str(p) for p in poly]) + '\r\n'
                 f.write(strResult)
 
-                poly = poly.reshape(-1, 2)
-                cv2.polylines(img, [poly.reshape((-1, 1, 2))], True, color=(0, 0, 255), thickness=2)
-                ptColor = (0, 255, 255)
-                if verticals is not None:
-                    if verticals[i]:
-                        ptColor = (255, 0, 0)
+                if horizontal:
+                    [x_min, y_min, x_max, y_max] = box
+                    cv2.rectangle(img, (x_min, y_min), (x_max, y_max), color=(0, 0, 255), thickness=2)
+                else:
 
-                if texts is not None:
-                    font = cv2.FONT_HERSHEY_SIMPLEX
-                    font_scale = 0.5
-                    cv2.putText(img, "{}".format(texts[i]), (poly[0][0]+1, poly[0][1]+1), font, font_scale, (0, 0, 0), thickness=1)
-                    cv2.putText(img, "{}".format(texts[i]), tuple(poly[0]), font, font_scale, (0, 255, 255), thickness=1)
+                    poly = poly.reshape(-1, 2)
+                    cv2.polylines(img, [poly.reshape((-1, 1, 2))], True, color=(0, 0, 255), thickness=2)
+                    ptColor = (0, 255, 255)
+                    if verticals is not None:
+                        if verticals[i]:
+                            ptColor = (255, 0, 0)
+
+                    if texts is not None:
+                        font = cv2.FONT_HERSHEY_SIMPLEX
+                        font_scale = 0.5
+                        cv2.putText(img, "{}".format(texts[i]), (poly[0][0]+1, poly[0][1]+1), font, font_scale, (0, 0, 0), thickness=1)
+                        cv2.putText(img, "{}".format(texts[i]), tuple(poly[0]), font, font_scale, (0, 255, 255), thickness=1)
 
         # Save result image
         cv2.imwrite(res_img_file, img)
@@ -88,8 +99,11 @@ def displayResult(img, boxes, verticals=None, texts=None):
 
     # make result file list
     horizontal = False
-    if not isinstance(boxes[0][0], list): # boxes[0][0] = x_min or = [l,t]
+
+    print(type(boxes[0][0]))
+    if isinstance(boxes[0][0], np.float32): # boxes[0][0] = x_min or = [l,t]
         horizontal = True
+        print("Display horizontal")
     for i, box in enumerate(boxes):
         if horizontal:
             [x_min, y_min, x_max, y_max] = box

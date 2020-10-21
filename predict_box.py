@@ -42,11 +42,11 @@ class CraftDetection:
             self.refine_model.eval()
             pr.poly = True
 
-    def text_detect(self, image_path):
-        if not os.path.exists(image_path):
-            print("Not exists path")
-            return []
-        image = imgproc.loadImage(image_path)       # numpy array img (RGB order)
+    def text_detect(self, image):
+        # if not os.path.exists(image_path):
+        #     print("Not exists path")
+        #     return []
+        # image = imgproc.loadImage(image_path)       # numpy array img (RGB order)
         # image = cv2.imread()
 
         time0 = time.time()
@@ -183,8 +183,8 @@ class CraftDetection:
 if __name__ == "__main__":
     app = CraftDetection()
     # app.test_folder("test_imgs")
-    boxes = app.text_detect("test_imgs/qc_6.jpg", visualize=True, horizontal_mode=True)
-    print(boxes)
+    boxes = app.text_detect("test_imgs/meme.jpg")
+    # print(boxes)
     # print(boxes)
     # print(score)
 

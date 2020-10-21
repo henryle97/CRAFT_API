@@ -1,3 +1,4 @@
+import os
 from random import choice
 from flask import Flask, jsonify, request
 import time, requests
@@ -59,41 +60,28 @@ def create_query_result(input_url, results, error=None):
     }
     return query_result
 
-@app.route("/query_box", methods=['GET'])
+@app.route("/query_box", methods=['GET', 'POST'])
 def query_box():
     try:
-        img_url = request.args.get('url', default='', type=str)
-        boxes, total_time = model.text_detect(img_url)
-        result = {'time': total_time, 'boxes': boxes}
-        return result
+        if request.method == "GET":
+            img_url = request.args.get('url', default='', type=str)
+            img = Image.open(img_url).convert('RGB')
+        else:
+            data = request.get_data()
+            img = Image.open(BytesIO(data)).convert('RGB')
+
     except Exception as ex:
         print(ex)
         return jsonify_str(create_query_result("", "", ex))
 
+    img = np.array(img)
+    boxes, total_time = model.text_detect(img)
+    result = {'time': total_time, 'boxes': boxes}
+    return result
 
 
-# @app.route("/query", methods=['GET', 'POST'])
-# def queryimg():
-#     if request.method == "POST":
-#         data = request.get_data()
-#         try:
-#             img = Image.open(BytesIO(data)).convert('RGB')
-#             img = cv2.cvtColor(np.array(img), cv2.COLOR_RGB2BGR)
-#         except Exception as ex:
-#             print(ex)
-#             return jsonify(create_query_result("Upload", "upload error"))
-#     else:
-#         try:
-#             image_url = request.args.get('url', default='', type=str)
-#             img = download_image(image_url)
-#         except Exception as ex:
-#             return jsonify_str(create_query_result("", "", ex))
-#     start = time.time()
-#     result_text = model.get_content_image(img)
-#     time_pred = str(time.time() - start)
-#     result = {"result: ": result_text, "predict time" : time_pred}
-#     return jsonify_str(result)
 
-
-app.run(pr.host, pr.port, threaded=True, debug=True)
+if __name__ == "__main__":
+    # app.run(pr.host, pr.port, threaded=True, debug=True)
+    app.run(debug=True, port=os.getenv('PORT', 5000))
 
