@@ -16,10 +16,10 @@ refine = False                # enable link refiner
 refiner_model = "weights/craft_refiner_CTW1500.pth"
 
 
-# other utils
+# other utils: custom
 horizontal_mode = True              # only horizontal boxes
 ratio_box_horizontal = 0.3          # if number of horizontal boxes is larger than 50%, use horizontal mode
-expand_ratio = 0.05                 # expand top, bottom: 3%
+expand_ratio = 0.04                 # expand top, bottom: x%
 visualize = True
 show_time = True
 folder_test = False
